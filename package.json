@@ -1,0 +1,22 @@
+{
+  "name": "rxl",
+  "version": "0.1.0",
+  "description": "Library to help describing reactive behavior in simple definition",
+  "scripts": {
+    "test": "node_modules/mocha/bin/mocha test/*.test.coffee --require espower-coffee/guess",
+    "test:watch": "npm run test -- -w"
+  },
+  "author": "Shinichi Tomita <shinichi.tomita@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "coffee-script": "^1.8.0",
+    "lodash": "^3.1.0",
+    "promise": "^6.1.0",
+    "rx": "^2.3.24"
+  },
+  "devDependencies": {
+    "espower-coffee": "^0.10.0",
+    "mocha": "^2.1.0",
+    "power-assert": "^0.10.1"
+  }
+}
