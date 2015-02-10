@@ -17,7 +17,7 @@
   "devDependencies": {
     "coffee-script": "^1.8.0",
     "espower-coffee": "^0.10.0",
-    "mocha": "^2.1.0",
+    "mocha": "^1.21.5",
     "power-assert": "^0.10.1"
   }
 }
