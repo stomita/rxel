@@ -3,8 +3,9 @@
   "version": "0.1.0",
   "description": "Library to help describing reactive behavior in simple definition",
   "scripts": {
+    "build": "./node_modules/coffee-script/bin/coffee -o ./build -c lib/*.coffee",
     "test": "./node_modules/mocha/bin/mocha test/*.test.coffee --require espower-coffee/guess",
-    "test:watch": "npm run test -- -w"
+    "test:watch": "npm run test -- --watch"
   },
   "main": "./build/rxel.js",
   "author": "Shinichi Tomita <shinichi.tomita@gmail.com>",
