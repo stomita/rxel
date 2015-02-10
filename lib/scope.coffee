@@ -4,6 +4,15 @@
 Rx = require "rx"
 _ = require "lodash"
 
+
+#
+isPromiseLike = (v) ->
+  _.isObject(v) && _.isFunction(v.then)
+
+
+#
+#
+#
 class Scope extends Rx.Subject
 
   constructor: (config={}) ->
@@ -35,8 +44,13 @@ class Scope extends Rx.Subject
         Rx.Observable.combineLatest(
           args.map (a) => @get(a)
           ->
-            fn.apply null, arguments
+            ret = fn.apply null, arguments
+            if isPromiseLike(ret)
+              Rx.Observable.fromPromise(ret)
+            else
+              Rx.Observable.return(ret)
         )
+        .flatMap (v) -> v
       else
         Rx.Observable.return(definition)
     {

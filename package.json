@@ -1,7 +1,7 @@
 {
   "name": "rxel",
   "version": "0.1.0",
-  "description": "Library to help describing reactive behavior in simple definition",
+  "description": "A library to help describing reactive behavior in simple definition",
   "scripts": {
     "build": "./node_modules/coffee-script/bin/coffee -o ./build -c lib/*.coffee",
     "test": "./node_modules/mocha/bin/mocha test/*.test.coffee --require espower-coffee/guess",
