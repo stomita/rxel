@@ -8,8 +8,8 @@ Scope = require "../lib/scope"
 #
 # create calculation varnode from function
 #
-calc = (fn) ->
-  $type: "calc"
+ref = (fn) ->
+  $refType: "fn"
   args: 
     fn.toString()
       .match(/^function\s+\w*\(([^)]*)\)/)?[1]
@@ -35,15 +35,15 @@ describe "scope", ->
       fieldB: 2
       fieldC: 123
       plus:
-        calc (fieldA, fieldB) ->
+        ref (fieldA, fieldB) ->
           evalCnt.plus++
           fieldA + fieldB
       multi:
-        calc (fieldB, fieldC) ->
+        ref (fieldB, fieldC) ->
           evalCnt.multi++
           fieldB * fieldC
       output:
-        calc (plus, multi) ->
+        ref (plus, multi) ->
           "A + B = #{plus}, B * C = #{multi}"
 
     beforeEach ->
