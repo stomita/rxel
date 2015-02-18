@@ -3,6 +3,7 @@
 ###
 Rx = require "rx"
 _ = require "lodash"
+Promise = require "promise"
 
 
 #
@@ -13,56 +14,98 @@ isPromiseLike = (v) ->
 #
 #
 #
-class Scope extends Rx.Subject
-
-  constructor: (config={}) ->
+class VarNode extends Rx.BehaviorSubject
+  constructor: (@name, source) ->
     super()
+    @_source = null
+    @_subscription = null
+    @assign source if source
+
+  assign: (@_source) ->
+    unless @_source instanceof Rx.Observable
+      @_source = Rx.Observable.return(@_source)
+    if @_subscription
+      @_subscription.dispose()
+      @_subscription = @_source?.subscribe(
+        (v) => @onNext(v)
+        (e) => @onError(e)
+      )
+
+  subscribe: ->
+    unless @_subscription
+      @_subscription = @_source?.subscribe(
+        (v) => @onNext(v)
+        (e) => @onError(e)
+      )
+    sb = super
+    Rx.Disposable.create =>
+      sb.dispose()
+      unless @hasObservers()
+        @_subscription.dispose()
+        @_subscription = null
+
+  promise: ->
+    new Promise (resolve, reject) => @take(1).subscribe(resolve, reject)
+
+
+#
+#
+#
+class Scope
+  constructor: (config={}) ->
     @_varNodes = {}
-    @set name, definition for name, definition of config
+    @$def(name, definition) for name, definition of config
 
-  get: (name) ->
-    varDefStream = @_varNodes[name]?.stream || Rx.Observable.empty()
-    @.filter (x) ->
-      x && x[0] == name
-    .map (x) ->
-      x[1]
-    .merge(varDefStream)
-    .debounce(10)
+  $: (name) ->
+    @_varNodes[name] = @_varNodes[name] || new VarNode(name)
 
-  set: (name, definition) ->
-    @unset(name)
-    @_varNodes[name] = @_createVarNode(name, definition)
+  $def: (name, definition) ->
+    source = buildObservable(@, definition)
+    @$set(name, source)
+    @
 
-  _createVarNode: (name, definition) ->
-    stream =
-      if _.isFunction definition
-        fn = definition
-        args = fn.toString()
-          .match(/^function\s+\w*\(([^)]*)\)/)?[1]
-          .split(/\s*,\s*/)
-          .filter (x) -> x
-        Rx.Observable.combineLatest(
-          args.map (a) => @get(a)
-          ->
-            ret = fn.apply null, arguments
-            if isPromiseLike(ret)
-              Rx.Observable.fromPromise(ret)
-            else
-              Rx.Observable.return(ret)
-        )
-        .flatMap (v) -> v
+  $get: (name) ->
+    @$(name).promise()
+
+  $set: (name, value) ->
+    @$(name).assign(value)
+    @
+
+
+#
+#
+buildObservable = (scope, definition) ->
+  if _.isObject(definition)
+    switch (definition.$type)
+      when "calc"
+        buildCalcFnObservable(scope, definition)
       else
-        Rx.Observable.return(definition)
-    {
-      stream: stream
-      subscription: stream.subscribe (value) =>
-        @onNext([ name, value ])
-    }
+        throw new Error("no varnode type found: #{definition.$type}")
+  else
+    Rx.Observable.return(definition)
 
-  unset: (name) ->
-    if @_varNodes[name]?
-      @_varNodes[name].subscription.dispose()
-      delete @_varNodes[name]
+#
+#
+buildCalcFnObservable = (scope, definition) ->
+  fn = definition.fn
+  args = definition.args || 
+    fn.toString()
+      .match(/^function\s+\w*\(([^)]*)\)/)?[1]
+      .split(/\s*,\s*/)
+      .filter (x) -> x
+  Rx.Observable.combineLatest(
+    args.map (a) => scope.$(a)
+    ->
+      ret = fn.apply null, arguments
+      if isPromiseLike(ret)
+        Rx.Observable.fromPromise(ret)
+      else
+        Rx.Observable.return(ret)
+  )
+  .flatMap (v) -> v
 
 
+#
+#
+#
 module.exports = Scope

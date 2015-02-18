@@ -4,6 +4,19 @@ Rx = require "rx"
 
 Scope = require "../lib/scope"
 
+
+#
+# create calculation varnode from function
+#
+calc = (fn) ->
+  $type: "calc"
+  args: 
+    fn.toString()
+      .match(/^function\s+\w*\(([^)]*)\)/)?[1]
+      .split(/\s*,\s*/)
+      .filter (x) -> x
+  fn: fn
+
 #
 # 
 #
@@ -15,60 +28,52 @@ describe "scope", ->
 
   #
   #
-  describe "simple reactive", ->
+  describe "simple reactive with calculation varnode", ->
+    evalCnt = 0
     sc = new Scope
-      num: 123
-      func: (num) -> num * 2
+      fieldA: 123
+      fieldB: 2
+      output:
+        calc (fieldA, fieldB) ->
+          evalCnt++
+          fieldA * fieldB
+
+    beforeEach ->
+      evalCnt = 0
 
     it "should get a value of primitive", (done) ->
-      sc.get "num"
-        .take(1)
-        .subscribe (v) ->
-          assert v == 123
-          done()
+      sc.$get("fieldA").then (v) ->
+        assert v == 123
+        assert evalCnt == 0
+        done()
 
     it "should get a value of calculated result", (done) ->
-      sc.get "func"
-        .take(1)
-        .subscribe (v) ->
-          assert v == 246
-          done()
+      sc.$get("output").then (v) ->
+        assert v == 246
+        assert evalCnt == 1
+        done()
 
     it "should get a value for changed", (done) ->
       setTimeout ->
-        sc.set "num", 321
+        sc.$set("fieldB", 3)
       , 100
-      sc.get "func"
-        .skip(1) # skip first value before overwriting 'num' variable
+      sc.$("output") # reference to rx observable
+        .skip(1)   # skip first value before overwriting 'num' variable
         .take(1)
         .subscribe (v) ->
-          assert v == 642
+          assert v == 369
+          assert evalCnt == 2
           done()
 
-  #
-  #
-  describe "promise reactive", ->
-    sc = new Scope
-      message: (name) ->
-        new Promise (resolve, reject) ->
-          setTimeout ->
-            resolve "Hello, #{name} !!!"
-          , 500
-
-    it "should get a promise result", (done) ->
-      sc.get "message"
-        .take(1)
-        .subscribe (message) ->
-          assert message == "Hello, John !!!"
-      sc.get "message"
-        .skip(1)
-        .take(1)
-        .subscribe (message) ->
-          assert message == "Hello, Jane !!!"
-          done()
+    it "should not evaluate during no subscription", (done) ->
+      sc.$set("fieldA", 100)
       setTimeout ->
-        sc.set "name", "John"
+        sc.$set("fieldB", 2)
         setTimeout ->
-          sc.set "name", "Jane"
+          sc.$get("output").then (v) ->
+            assert v == 200
+            assert evalCnt == 1
+            done()
         , 100
       , 100
+
