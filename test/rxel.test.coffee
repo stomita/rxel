@@ -36,10 +36,10 @@ describe "rxel", ->
       name: "John"
       message: Rxel.calc (name) -> "Hello, #{name}"
 
-    sc.$get("message").then (value) ->
+    sc.message.then (value) ->
       assert value == "Hello, John"
-      sc.$set "name", "Jane"
-      sc.$get "message"
+      sc.name = "Jane"
+      sc.message
     .then (value) ->
       assert value == "Hello, Jane"
 
@@ -50,10 +50,10 @@ describe "rxel", ->
       searchResult: Rxel.calc (keyword) ->
         util.search(keyword)
 
-    sc.$get("searchResult").then (items) ->
+    sc.searchResult.then (items) ->
       assert.deepEqual items, [ "orange", "banana", "mango" ]
-      sc.$set "keyword", "m"
-      sc.$get "searchResult"
+      sc.keyword = "m"
+      sc.searchResult
     .then (items) ->
       assert.deepEqual items, [ "melon", "mango" ]
 
@@ -64,10 +64,10 @@ describe "rxel", ->
       searchResult: Rxel.async (keyword, callback) ->
         util.searchAsync(keyword, callback)
 
-    sc.$get("searchResult").then (items) ->
+    sc.searchResult.then (items) ->
       assert.deepEqual items, [ "orange", "banana", "mango" ]
-      sc.$set "keyword", "m"
-      sc.$get "searchResult"
+      sc.keyword = "m"
+      sc.searchResult
     .then (items) ->
       assert.deepEqual items, [ "melon", "mango" ]
 
