@@ -1,5 +1,7 @@
 # Rxel
 
+[![Build Status](https://travis-ci.org/stomita/rxel.svg)](https://travis-ci.org/stomita/rxel)
+
 A library to help describing reactive behavior in simple definition.
 
 ## Example
