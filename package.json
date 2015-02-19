@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "A library to help describing reactive behavior in simple definition",
   "scripts": {
-    "build": "./node_modules/coffee-script/bin/coffee -o ./lib -c src/*.coffee",
+    "build": "./node_modules/coffee-script/bin/coffee -o ./lib -c src",
     "test": "./node_modules/mocha/bin/mocha test/*.test.coffee --require espower-coffee/guess",
     "test:watch": "npm run test -- --watch"
   },
