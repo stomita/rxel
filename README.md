@@ -6,23 +6,32 @@ A library to help describing reactive behavior in simple definition.
 
 ```coffeescript
 Rxel = require "rxel"
-$ = require ""
+$ = require "jquery"
 
 sc = Rxel.scope
   name: "John"
   message: Rxel.calc (name) -> "Hello, #{name}"
-  keyword: "apple"
+  keyword: undefined
   searchResult: Rxel.calc (keyword) ->
     $.getJSON "http://example.com/search.json?q=#{name}"
 
-sc.$get("message").then (message) ->
-  assert message == "Hello, John"
+##
+sc.message.then (message) ->
+  console.log message # ==> "Hello, John"
+.then ->
+  sc.name = "Jane"
+  sc.message
+.then (message) ->
+  console.log message # ==> "Hello, Jane"
+
+##
+$("input[name=keyword]").on "keyup", (e) ->
+  keyword = $(@).val()
+  # sc.keyword = keyword
+  sc.$set "keyword", keyword
 
 sc.$("searchResult").subscribe (result) ->
   console.log result
-
-$("input[name=keyword]").on "keyup", (e) ->
-  sc.$set "keyword", $(@).val()
 
 ```
 
