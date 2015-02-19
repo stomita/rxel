@@ -34,7 +34,7 @@ class VariableNode extends Rx.Subject
       try
         @_cache = new Rx.ReplaySubject(1)
         @_cache
-  #        .distinctUntilChanged()
+          .distinctUntilChanged()
           .do (v) => debug "#{@name}: value = #{v}"
           .subscribe(
             (v) => @onNext(v)
