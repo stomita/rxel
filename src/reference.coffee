@@ -8,6 +8,7 @@ _ = require "lodash"
 #
 refTypes =
   fn: require "./reference/fn"
+  async: require "./reference/async"
 
 #
 #
@@ -20,16 +21,45 @@ buildExpression = (scope, definition) ->
   else
     Rx.Observable.return(definition)
 
-preprocess = ->
-  for refType, ref of refTypes when ref.preprocess?
-    def = ref.preprocess.apply ref, arguments
-    return def if def
-  null
+#
+#
+createCalcDefinition = (fn) ->
+  if arguments.length > 1
+    args = Array.prototype.slice.call(arguments, 1)
+  else
+    args =
+      fn.toString()
+        .match(/^function\s+\w*\(([^)]*)\)/)?[1]
+        .split(/\s*,\s*/)
+        .filter (x) -> x
+  {
+    $refType: "fn"
+    args: args
+    fn: fn
+  }
+
+#
+#
+createAsyncCalcDefinition = (fn) ->
+  if arguments.length > 1
+    args = Array.prototype.slice.call(arguments, 1)
+  else
+    args =
+      fn.toString()
+        .match(/^function\s+\w*\(([^)]*)\)/)?[1]
+        .split(/\s*,\s*/)
+        .filter (x) -> x
+    args.pop()
+  {
+    $refType: "async"
+    args: args
+    fn: fn
+  }
 
 #
 #
 #
 module.exports =
-  types: refTypes
   buildExpression: buildExpression
-  preprocess: preprocess
+  createCalcDefinition: createCalcDefinition
+  createAsyncCalcDefinition: createAsyncCalcDefinition

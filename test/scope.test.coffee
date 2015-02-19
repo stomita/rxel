@@ -2,7 +2,7 @@ assert = require "power-assert"
 Promise = require "promise"
 Rx = require "rx"
 
-Scope = require "../lib/scope"
+Scope = require "../src/scope"
 
 debug = require("debug") "rxel:test:scope"
 

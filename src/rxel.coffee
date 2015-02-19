@@ -10,4 +10,6 @@ module.exports =
   scope: (config, options={}) ->
     new Scope(config, options)
 
-  ref: Reference.preprocess
+  calc: Reference.createCalcDefinition
+
+  async: Reference.createAsyncCalcDefinition
