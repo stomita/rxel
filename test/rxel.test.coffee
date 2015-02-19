@@ -46,10 +46,11 @@ describe "rxel", ->
 
   it "should define promise fn", ->
     sc = Rxel.scope
-      keyword: "an"
+      keyword: undefined
       searchResult: Rxel.calc (keyword) ->
         util.search(keyword)
 
+    sc.keyword = "an"
     sc.searchResult.then (items) ->
       assert.deepEqual items, [ "orange", "banana", "mango" ]
       sc.keyword = "m"
@@ -60,10 +61,11 @@ describe "rxel", ->
 
   it "should define async fn", ->
     sc = Rxel.scope
-      keyword: "an"
+      keyword: undefined
       searchResult: Rxel.async (keyword, callback) ->
         util.searchAsync(keyword, callback)
 
+    sc.keyword = "an"
     sc.searchResult.then (items) ->
       assert.deepEqual items, [ "orange", "banana", "mango" ]
       sc.keyword = "m"

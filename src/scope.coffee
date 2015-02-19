@@ -39,10 +39,12 @@ class Scope
     name for name, varNode in @_varNodes
 
   $define: (name, definition) ->
-    @_varNodes[name] = @_varNodes[name] || new VariableNode(name)
-    defineProperty @, name,
-      get: => @$get(name)
-      set: (value) => @$set(name, value)
+    unless @_varNodes[name]
+      @_varNodes[name] = new VariableNode(name)
+    unless @[name]
+      defineProperty @, name,
+        get: => @$get(name)
+        set: (value) => @$set(name, value)
     source = Reference.buildExpression(@, definition)
     @$set(name, source)
     @
