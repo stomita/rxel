@@ -27,7 +27,7 @@ class Scope
     for name of config
       @_varNodes[name] = @_varNodes[name] || new VariableNode(name)
     for name, definition of config
-      @$def(name, definition)
+      @$define(name, definition)
 
   $: (name) ->
     @_varNodes[name]
@@ -38,7 +38,7 @@ class Scope
   $varNames: ->
     name for name, varNode in @_varNodes
 
-  $def: (name, definition) ->
+  $define: (name, definition) ->
     @_varNodes[name] = @_varNodes[name] || new VariableNode(name)
     defineProperty @, name,
       get: => @$get(name)
