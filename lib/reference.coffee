@@ -20,9 +20,11 @@ buildExpression = (scope, definition) ->
   else
     Rx.Observable.return(definition)
 
-preprocessors = {}
-for refType, ref of refTypes when ref.preprocess?
-  preprocessors[refType] = -> ref.preprocess.apply ref, arguments
+preprocess = ->
+  for refType, ref of refTypes when ref.preprocess?
+    def = ref.preprocess.apply ref, arguments
+    return def if def
+  null
 
 #
 #
@@ -30,4 +32,4 @@ for refType, ref of refTypes when ref.preprocess?
 module.exports =
   types: refTypes
   buildExpression: buildExpression
-  preprocessors: preprocessors
+  preprocess: preprocess

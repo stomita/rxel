@@ -11,6 +11,7 @@
   "author": "Shinichi Tomita <shinichi.tomita@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "debug": "^2.1.1",
     "lodash": "^3.1.0",
     "promise": "^6.1.0",
     "rx": "^2.3.24"

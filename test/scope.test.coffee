@@ -4,11 +4,12 @@ Rx = require "rx"
 
 Scope = require "../lib/scope"
 
+debug = require("debug") "rxel:test:scope"
 
 #
 # create calculation varnode from function
 #
-ref = (fn) ->
+calc = (fn) ->
   $refType: "fn"
   args: 
     fn.toString()
@@ -35,21 +36,23 @@ describe "scope", ->
       fieldB: 2
       fieldC: 123
       plus:
-        ref (fieldA, fieldB) ->
+        calc (fieldA, fieldB) ->
           evalCnt.plus++
           fieldA + fieldB
       multi:
-        ref (fieldB, fieldC) ->
+        calc (fieldB, fieldC) ->
           evalCnt.multi++
           fieldB * fieldC
       output:
-        ref (plus, multi) ->
+        calc (plus, multi) ->
           "A + B = #{plus}, B * C = #{multi}"
 
     beforeEach ->
+      debug "---------------------------------------------"
       evalCnt =
         multi: 0
         plus: 0
+
 
     it "should get a value of primitive", (done) ->
       sc.$get("fieldA").then (v) ->
@@ -59,6 +62,7 @@ describe "scope", ->
         done()
       null
 
+
     it "should get a value of calculated result", (done) ->
       sc.$get("plus").then (v) ->
         assert v == 3
@@ -66,6 +70,7 @@ describe "scope", ->
         assert evalCnt.multi == 0
         done()
       null
+
 
     it "should get a value for changed", (done) ->
       setTimeout ->
@@ -79,7 +84,10 @@ describe "scope", ->
           assert evalCnt.plus == 0
           assert evalCnt.multi == 2
           done()
+        ,
+          (e) -> done(e)
       null
+
 
     it "should not evaluate during no subscription", (done) ->
       sc.$set("fieldB", 4)
@@ -92,6 +100,7 @@ describe "scope", ->
             done()
         , 100
       , 100
+
 
     it "should cache evaluated result if no change", (done) ->
       sc.$set("fieldA", 24)
@@ -110,5 +119,4 @@ describe "scope", ->
         setTimeout ->
           sc.$set("fieldC", 5)
       , 100
-
 

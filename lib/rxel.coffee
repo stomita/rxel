@@ -10,4 +10,4 @@ module.exports =
   scope: (config, options={}) ->
     new Scope(config, options)
 
-  ref: Reference.preprocessors
+  ref: Reference.preprocess
