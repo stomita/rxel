@@ -15,6 +15,7 @@ defineProperty =
       obj.__defineGetter__ key, prop.get
       obj.__defineSetter__ key, prop.set
   else
+    console.warn "No Object.defineProperty() or equivalent found. Varnodes are only accessible via $get()/$set()."
     ->
 
 #
@@ -30,6 +31,9 @@ class Scope
 
   $: (name) ->
     @_varNodes[name]
+
+  $vars: ->
+    varNode for name, varNode in @_varNodes
 
   $def: (name, definition) ->
     @_varNodes[name] = @_varNodes[name] || new VariableNode(name)
