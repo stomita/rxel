@@ -35,6 +35,9 @@ class Scope
   $vars: ->
     varNode for name, varNode in @_varNodes
 
+  $varNames: ->
+    name for name, varNode in @_varNodes
+
   $def: (name, definition) ->
     @_varNodes[name] = @_varNodes[name] || new VariableNode(name)
     defineProperty @, name,
