@@ -3,11 +3,11 @@
   "version": "0.1.0",
   "description": "A library to help describing reactive behavior in simple definition",
   "scripts": {
-    "build": "./node_modules/coffee-script/bin/coffee -o ./build -c lib/*.coffee",
+    "build": "./node_modules/coffee-script/bin/coffee -o ./lib -c src/*.coffee",
     "test": "./node_modules/mocha/bin/mocha test/*.test.coffee --require espower-coffee/guess",
     "test:watch": "npm run test -- --watch"
   },
-  "main": "./build/rxel.js",
+  "main": "./lib/rxel.js",
   "author": "Shinichi Tomita <shinichi.tomita@gmail.com>",
   "license": "MIT",
   "dependencies": {
@@ -26,7 +26,7 @@
     "README.md",
     "package.json",
     "lib",
-    "build",
+    "src",
     "test"
   ]
 }
