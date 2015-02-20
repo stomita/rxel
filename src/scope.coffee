@@ -33,10 +33,10 @@ class Scope
     @_varNodes[name]
 
   $vars: ->
-    varNode for name, varNode in @_varNodes
+    varNode for name, varNode of @_varNodes
 
   $varNames: ->
-    name for name, varNode in @_varNodes
+    name for name, varNode of @_varNodes
 
   $define: (name, definition) ->
     unless @_varNodes[name]
